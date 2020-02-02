@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 22 23:36:32 2020
-
-@author: da
-"""
+\
 import string
 import random 
 import pandas as pd 
@@ -23,8 +19,9 @@ def main():
     #generate 3000 users data
     temp=[]
     data=pd.read_csv('full.csv',header=None)
-    for i in range(4000):
-        temp.append([name_generator(),stock_generator(data),0,0,random.randint(10,40)/100,random.randint(5,40)/100])
+    for i in range(1000000):
+        temp.append([0,name_generator(),stock_generator(data),0,0,random.randint(10,40)/100,
+                     random.randint(5,40)/100,0,0,random.randint(2000,400000)])
     temp=pd.DataFrame(temp)
     temp.to_csv('user_gen.csv',header=False,index=False)
     
