@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-\
+
 import string
 import random 
 import pandas as pd 
