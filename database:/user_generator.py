@@ -18,8 +18,8 @@ def stock_generator(data):
 def main():
     #generate 3000 users data
     temp=[]
-    data=pd.read_csv('full.csv',header=None)
-    for i in range(1000000):
+    data=pd.read_csv('/users/da/desktop/full.csv',header=None,low_memory=False)
+    for i in range(500000):
         temp.append([0,name_generator(),stock_generator(data),0,0,random.randint(10,40)/100,
                      random.randint(5,40)/100,0,0,random.randint(2000,400000)])
     temp=pd.DataFrame(temp)

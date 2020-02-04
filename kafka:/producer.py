@@ -16,6 +16,7 @@ def main():
     df.drop(df.tail(2).index,inplace=True)
     df[0]=df[0].astype(dtype=int)
     df[2]=df[2].astype(dtype=int)
+    df[3]=df[3].astype(dtype=float)
     for i in range(len(df.index)/10000):    
         for j in range(10000):
             b=list(df.iloc[i*1000+j])
