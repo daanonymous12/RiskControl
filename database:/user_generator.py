@@ -4,6 +4,7 @@
 import string
 import random 
 import pandas as pd 
+from cassandra.cluster import Cluster
 #This scipt will create a list of user with
 #username, stock,Current holding value,# stock, buy,sell amount 
 def name_generator():
@@ -17,13 +18,20 @@ def stock_generator(data):
     return ticker[random.randint(1,15796358)]
 def main():
     #generate 3000 users data
-    temp=[]
     data=pd.read_csv('/users/da/desktop/full.csv',header=None,low_memory=False)
-    for i in range(500000):
-        temp.append([0,name_generator(),stock_generator(data),0,0,random.randint(10,40)/100,
-                     random.randint(5,40)/100,0,0,random.randint(2000,400000)])
-    temp=pd.DataFrame(temp)
-    temp.to_csv('user_gen.csv',header=False,index=False)
-    
+    cluster = Cluster(["<IP of Cassandra EC2 instance >"])
+    session = cluster.connect('users')
+    for i in range(100000):
+        user=name_generator()
+        ticker=stock_generator(data)
+        session.execute("""insert into users.user_data100k(time,user,ticker,numb_share,profit,buy,sell,previous_price,
+                                                     total_value,cash) values (%(time)s,%(user)s,%(ticker)s,
+                                                     %(numb_share)s,%(profit)s,%(buy)s,%(sell)s,%(previous_price)s,
+                                                     %(total_value)s,%(cash)s)""",{'time':0,'user':user,'ticker':ticker,
+                                                     'numb_share':0,'profit': 0,'buy':random.randint(10,40)/100,
+                                                     'sell': random.randint(5,40)/100,'previous_price':0,
+                                                     'total_value':0,'cash':random.randint(2000,400000)})  
+        session.execute("""insert into users.directory_data(user,ticker)
+                   values (%(user)s,%(ticker)s)""",{'user':user,'ticker':ticker})    
 if __name__ == '__main__':
         main()
