@@ -89,7 +89,7 @@ if __name__=='__main__':
     sqlContext=SQLContext(sc)
     cass_data=load_and_get_table('users','user_data')
     spark=SparkSession(sc)
-    ssc=StreamingContext(sc,1)
+    ssc=StreamingContext(sc,8)
     kafka_stream=KafkaUtils.createDirectStream(ssc,['test'],kafkaParams = {"metadata.broker.list": 'ip-10-0-0-4:9092,ip-10-0-0-5:9092,ip-10-0-0-14:9092'})
     flow=kafka_stream.map(lambda v: json.loads(v[1].decode('utf-8')))
     mapped_flow=flow.map(lambda x:(int(x[0]),str(x[1]),int(x[2]),float(x[3])))

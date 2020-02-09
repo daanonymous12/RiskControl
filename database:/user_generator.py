@@ -17,14 +17,14 @@ def stock_generator(data):
     ticker=data[1]
     return ticker[random.randint(1,15796358)]
 def main():
-    #generate 3000 users data
+    #generate users data
     data=pd.read_csv('/users/da/desktop/full.csv',header=None,low_memory=False)
-    cluster = Cluster(["<IP of Cassandra EC2 instance >"])
+    cluster = Cluster(["<cluster-IP>"])
     session = cluster.connect('users')
     for i in range(100000):
         user=name_generator()
         ticker=stock_generator(data)
-        session.execute("""insert into users.user_data100k(time,user,ticker,numb_share,profit,buy,sell,previous_price,
+        session.execute("""insert into users.user_data3k(time,user,ticker,numb_share,profit,buy,sell,previous_price,
                                                      total_value,cash) values (%(time)s,%(user)s,%(ticker)s,
                                                      %(numb_share)s,%(profit)s,%(buy)s,%(sell)s,%(previous_price)s,
                                                      %(total_value)s,%(cash)s)""",{'time':0,'user':user,'ticker':ticker,
