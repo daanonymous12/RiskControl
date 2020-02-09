@@ -11,7 +11,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import dash_table
 
-cluster = Cluster(["ec2-52-44-132-206.compute-1.amazonaws.com"])
+cluster = Cluster(["<IP of cassandra DB>"])
 conn=cluster.connect('users')
 app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1.0"}])
 server = app.server
