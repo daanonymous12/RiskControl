@@ -9,7 +9,7 @@ of traders have a false sense of security and tend to not test their trading str
 My application is allows users to test the viability of their strategy in realtime which helps them
 decide whether if a strategy should be pulled or scaled up.
 ## Tech Stack
-![Alt text] (pipeline)
+![pipeline](pipeline.png)
 
 ### Kafka
 Data stream was simulated from historical trades data from New York Stock Exchange and streamed from 
