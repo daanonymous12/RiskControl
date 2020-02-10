@@ -18,12 +18,15 @@ def looping_funct(flow):
     df=df.dropDuplicates(['ticker']) 
     criteria=cass_data.join(df,['ticker'],'inner')
     #drop users whose condition don't need to be calculated  
-    criteria=criteria.withColumn('price',
+    criteria=criteria.withColumn('volume',
     when((abs(col('previous_price')-col('price'))<col('buy'))&(
         abs(col('previous_price')-col('price'))<col('sell')),
-        0).otherwise(col('price')))
-    criteria=criteria.filter(criteria.price != 0)
+        0).otherwise(col('volume')))
+    writepart=criteria.filter(criteria.volume<1)
+    writeToCassandra(writepart,'users','graph_data')
+    criteria=criteria.filter(criteria.volume != 0)
     calculation(criteria)
+
 
 def calculation(criteria):
     #Buy-shares
@@ -92,7 +95,10 @@ if __name__=='__main__':
     ssc=StreamingContext(sc,8)
     kafka_stream=KafkaUtils.createDirectStream(ssc,['test'],kafkaParams = {"metadata.broker.list": 'ip-10-0-0-4:9092,ip-10-0-0-5:9092,ip-10-0-0-14:9092'})
     flow=kafka_stream.map(lambda v: json.loads(v[1].decode('utf-8')))
-    mapped_flow=flow.map(lambda x:(int(x[0]),str(x[1]),int(x[2]),float(x[3])))
+    #for java, using following 2 lines 
+#    floww=flow.map(lambda v:list( itertools.chain.from_iterable(v.values())))
+#    mapped_flow=floww.map(lambda x:(int(x[0]),str(x[1]),int(x[2]),round(float(x[3]),2)))
+    mapped_flow=flow.map(lambda x:(int(x[0]),str(x[1]),int(x[2]),round(float(x[3]))))
     mapped_flow.foreachRDD(looping_funct)
    
     ssc.start()
