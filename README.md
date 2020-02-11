@@ -1,5 +1,20 @@
 # RiskControl
 
+├── README.md
+├── frontend
+│   └── frontend.py
+├── ingestion
+│   └── dezip.py
+├── Database
+│   └── user_generator.py
+└── spark(2.11)
+    ├── pyspark_analysis.py
+    │
+    └── Jar files
+            ├── spark-streaming-kafka-0-8-assembly_2.11-2.4.0.jar
+            ├──jsr166e.jar 
+            └── spark-cassandra-connector_2.11-2.3.0.jar
+
 ## Introduction
 
 With the rise of technology and information, stock trading has once again gain popularity.
@@ -26,3 +41,6 @@ batch time for this project, under 100k users was 8 seconds because batch time w
 ### Cassandra 
 Cassandra database was chosen because of its relatively read speed and extremely fast write speed. Cassandra had 3 databases. First table was named directory_data and identified usernames to tickers. The second table contained historical movement of the username and is structured to have username as partition key and time as clustering key. This design allows for easier
 query in frontend for graphing purposes. The third table contained current updated user information with ticker as partition key and user as clustering key. The cassandra cluster consisted of 3 amazon EC2 instances and the keyspace used for this project contained replication factor of 3. 
+
+## Frontend 
+Frontend can accessed through wordqu.xyz. Frontend is dash-based and does query from 3 cassandra tables. The first table is an identifier which matches username with ticker specified in strategy. This is because the partition key of user strategy statistic has stock ticker as partition and user as cluster key.The third cassandra table contain historical data for each user which is graphed in the user interface.
