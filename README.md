@@ -1,20 +1,17 @@
 # RiskControl
-
-├── README.md
-├── frontend
-│   └── frontend.py
-├── ingestion
-│   └── dezip.py
-├── Database
-│   └── user_generator.py
-└── spark(2.11)
-    ├── pyspark_analysis.py
-    │
-    └── Jar files
-            ├── spark-streaming-kafka-0-8-assembly_2.11-2.4.0.jar
-            ├──jsr166e.jar 
-            └── spark-cassandra-connector_2.11-2.3.0.jar
-
+    ├── README.md
+    ├── frontend
+    │   └── frontend.py
+    ├── ingestion
+    │   └── dezip.py
+    ├── Database
+    |   └── user_generator.py
+    └── Spark
+        └── pyspark_analysis.py
+        └── Jar file
+              ├── spark-streaming-kafka-0-8-assembly_2.11-2.4.0.jar
+              ├── jsr166e.jar
+		└── spark-cassandra-connector_2.11-2.3.0.jar
 ## Introduction
 
 With the rise of technology and information, stock trading has once again gain popularity.
