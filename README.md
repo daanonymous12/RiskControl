@@ -23,6 +23,8 @@ decide whether if a strategy should be pulled or scaled up.
 ## Tech Stack
 ![pipeline](pipeline.png)
 
+## Data Source 
+Data was streamed through old trade data from New York Stock Exchange. The file is orignally in gzip file, it was dezip and converted to csv and saved to S3 to be streamed by Kafka producer
 ### Kafka
 Data stream was simulated from historical trades data from New York Stock Exchange and streamed from 
 amazon S3 into kafka through python producer script. The messages were fed into 1 kafka topic and everything
@@ -42,3 +44,7 @@ query in frontend for graphing purposes. The third table contained current updat
 
 ## Frontend 
 Frontend can accessed through wordqu.xyz. Frontend is dash-based and does query from 3 cassandra tables. The first table is an identifier which matches username with ticker specified in strategy. This is because the partition key of user strategy statistic has stock ticker as partition and user as cluster key.The third cassandra table contain historical data for each user which is graphed in the user interface.
+
+Website User Interface: Wordqu.xyz
+
+## Packages used 
