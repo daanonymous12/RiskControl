@@ -47,4 +47,3 @@ Frontend can accessed through wordqu.xyz. Frontend is dash-based and does query 
 
 Website User Interface: Wordqu.xyz
 
-## Packages used 
