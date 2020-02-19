@@ -1,4 +1,6 @@
 
 database:/.DS_Store
 .DS_Store
-database:/.DS_Store
+kafka/.DS_Store
+spark/.DS_Store
+
