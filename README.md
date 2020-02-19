@@ -10,8 +10,7 @@
         └── pyspark_analysis.py
         └── Jar file
               ├── spark-streaming-kafka-0-8-assembly_2.11-2.4.0.jar
-              ├── jsr166e.jar
-		└── spark-cassandra-connector_2.11-2.3.0.jar
+              ├── spark-cassandra-connector_2.11-2.3.0.jar + jsr166e.jar
 ## Introduction
 
 With the rise of technology and information, stock trading has once again gain popularity.
