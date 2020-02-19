@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import string
 import random
 import pandas as pd
@@ -10,6 +9,14 @@ from cassandra.cluster import Cluster
 
 
 def name_generator():
+    """
+    Returns a randomized username thorugh a combination of
+    number and strings in length of 7
+    
+    Inputs:  None
+    @rtype:  string
+    @return: randomized username
+    """
     length = 7
     res = ''.join(random.choices(string.ascii_uppercase
                                  + string.digits, k=length))
@@ -17,19 +24,33 @@ def name_generator():
 
 
 def stock_generator(data):
-    # 'open a day trading data,randomly select an interger
-    # from 1 to 15796358(len(file))
-    # pull the ticker of random interger on csv file'
+    """
+    open a documnet of historical data from NYSE and randomly generate a
+    stock ticker through randomly selecting in file
+    
+    @type  data:  dataframe
+    @param data: A historical file of stock data
+    @rtype:      string
+    """
     ticker = data[1]
     return ticker[random.randint(1, 15796358)]
 
 
-def main():
-    # generate users data
+def main(num):
+    """
+    generate a selected amount of user data and writes it to cassandra
+    database. There is no reason and only takes on input, numbers. it calls
+    stock_generator which generate user selected ticker and name_generator
+    which generates the name. Inside the main, parameters suc as buy,sell
+    and cash will be randomized.
+    
+    @type  num: number
+    @param num: number of users to generate
+    """
     data = pd.read_csv('<TAQFileDirectory>', header=None, low_memory=False)
     cluster = Cluster(["<cluster-IP>"])
     session = cluster.connect('users')
-    for i in range(100000):
+    for i in range(num):
         user = name_generator()
         ticker = stock_generator(data)
         session.execute("""insert into users.user_data(time,user,ticker,
@@ -46,4 +67,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    num = 10000
+    main(num)
