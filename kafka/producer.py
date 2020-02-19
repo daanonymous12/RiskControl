@@ -8,6 +8,9 @@ import pandas as pd
 
 
 def main():
+    """
+    Opens historical trade data from amazon S3 and sends them into Kafka.
+    """
     flush_amount = 10000
     # communicate with master node of ec2 instance
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],

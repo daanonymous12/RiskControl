@@ -84,6 +84,14 @@ app.layout = html.Div([
     [Input(component_id='my-id', component_property='value')]
 )
 def update_output_div(value):
+    """
+    Takes username input and output the ticker of the said user through callback.
+    
+    @type  value: string
+    @param value: username
+    @rtype:       string
+    @return:      The ticker of the user in databse
+    """
     user = conn.execute("""select * from users.directory_data where
                       user=%(user)s""", {'user': value}, trace=False)
     user = pd.DataFrame(user)
@@ -96,6 +104,17 @@ def update_output_div(value):
          Input('my-div', 'children'),
          Input("interval", "n_intervals")])
 def get_table_data(user, ticker, _):
+    """
+    This function takes user infomation including ticker and username and
+    queries from cassandra databse for parameters such as outputs the current
+    statistics for the users including cash, and profit.
+    
+    @type  user: string
+    @param user: username
+    @type  ticker: string
+    @param ticker: ticker associated with the user
+    @rtype data: User data for table in frontend
+    """
     table_data = conn.execute("""select * from users.user_data100k where
                               ticker=%(ticker)sand user=%(user)s""",
                               {'ticker': ticker, 'user': user}, trace=False)
@@ -116,12 +135,23 @@ def get_table_data(user, ticker, _):
               [Input(component_id='my-id', component_property='value'),
                Input("interval", "n_intervals")])
 def get_graph_table(value, _):
+    """
+    Updates the graph data for the frontend website through query from
+    cassandra database and stores it to be used when plotting graph
+    It takes in username as well as a interval for updating.
+    
+    @type  value: string
+    @param value: username
+    @type      _: number
+    @param     _: update interval
+    @rtype:       dict
+    @return     : dictionary of all values for the user to be used for graphs
+    """
     historical = conn.execute("""select * from users.graph_data where
                               user=%(user)s""", {'user': value}, trace=False)
     historical = pd.DataFrame(historical)
     historical['time_new'] = historical['time_new'].astype(int)/100
-    historical['time_new'] = pd.to_datetime(historical['time_new'],
-              format='%H%M%f').dt.time
+    historical['time_new'] = pd.to_datetime(historical['time_new'],format='%H%M%f').dt.time
     graph_data = historical[['time_new', 'cash', 'numb_share', 'price',
                              'profit', 'total_value']].copy()
     return graph_data.to_dict('list')
@@ -131,6 +161,18 @@ def get_graph_table(value, _):
               [Input('drop-down', 'value'),
                Input('memory', 'data')])
 def draw_data(value, data):
+    """
+    This function takes dictionary data stored in memory variable along with 
+    graph parameter and returns a graph through use of plotly.tools.
+    
+    @type  value: string
+    @param value: Dropdown bar value to be graphed on the y axis
+    @type   data: dict
+    @param  data: Dictionary of graph data for user
+    @rtyp:        graph
+    @return:      plot with time as x-axis and user specified parameter as
+                  y parameter. Default value is 'All'
+    """
     if value == 'All':
         fig = tls.make_subplots(rows=1, cols=1, shared_xaxes=True,
                                 vertical_spacing=0, horizontal_spacing=0)
@@ -162,6 +204,22 @@ def draw_data(value, data):
                Input('Sell', 'value'),
                Input('cash_start', 'value')])
 def new_user(user, ticker, buy, sell, cash_start):
+    """
+    Inserts new user into 2 cassandra databse, one for directory and other is
+    for user data.
+    @type  user: string
+    @param user: username
+    @type  ticker: string
+    @param ticker: stock picked
+    @type  buy: number
+    @param buy: threshold,in dollar, when exceeded, will trigger a buy
+    @type  sell: number
+    @param sell: threshold,in dollar, when exceeded, will trigger a sell
+    @type  cash_start: number
+    @param cash_start: starting capital in dollars
+    @rtype: string
+    @return: text notifying user that information has been inputted
+    """
     if cash_start is None:
         return []
     else:

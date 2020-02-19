@@ -9,13 +9,30 @@ from pyspark.sql.functions import col, when, floor, abs
 
 
 def combine(criteria, cass_data):
+    """
+    This function takes in original table as well as calculated user table,
+    and merge them into one, replacing outdated user information and writes
+    the new user information to cassandra database. This function has no output.
+    
+    @type  criteria: dataframe
+    @param criteria: Updated user information dataframe
+    @type  cass_data: dataframe
+    @param cass_data: cassandra table with all user information
+    """
     user_list = criteria.select('user').rdd.flatMap(lambda x: x).collect()
-    filter_data = cass_data.filter(cass_data.user.isin(user_list)==False)
+    filter_data = cass_data.filter(cass_data.user.isin(user_list) == False)
     cass_data = filter_data.union(criteria)
     writeToCassandra(criteria, 'users', 'user_data')
 
 
 def looping_funct(flow):
+    """
+    This function first converts RDD into dataframe, drop all duplicates and
+    then filters users who wont make actions and writes them to cassandra. The
+    users who woul make an action is passedi nto calculation function.
+    @type  flow: RDD
+    @param flow: RDD stream from kafka
+    """
     df = flow.toDF(['time_new', 'ticker', 'volume', 'price'])
     df = df.dropDuplicates(['ticker'])
     criteria = cass_data.join(df, ['ticker'], 'inner')
@@ -31,6 +48,13 @@ def looping_funct(flow):
 
 
 def calculation(criteria):
+    """
+    This function does column function and calculations on all rows of the
+    dataframe through column operations.
+    @type  criteria: dataframe
+    @param criteria: Joined table of user information and stock information
+                     which needs to be calculated 
+    """
     # Buy-shares
     criteria = criteria.withColumn('numb_share',
     when(col('previous_price') - col('price') > col('buy'),
@@ -78,6 +102,15 @@ col('price')).otherwise(col('previous_price')))
 
 
 def load_and_get_table(keys_space_name, table_name):
+    """
+    This function loads user table from Cassandra.
+    @type  keys_space_name: string
+    @param keys_space_name: name of keyspace
+    @type  table_name: string
+    @param table_name: name of table to pull
+    @rtype: dataframe
+    @return: Cassandra table with all user information
+    """
     table_df = sqlContext.read\
         .format("org.apache.spark.sql.cassandra")\
         .options(table=table_name, keyspace=keys_space_name)\
@@ -89,6 +122,16 @@ def load_and_get_table(keys_space_name, table_name):
 
 
 def writeToCassandra(data, key_space_name, table_name):
+    """
+    This function writes  table to Cassandra.
+    @type  data: dataframe
+    @param data: User information
+    @type  key_space_name: string
+    @param key_space_name: name of keyspace
+    @type  table_name: string
+    @param table_name: name of table to pull
+    @rtype: dataframe
+    """
     data.write\
         .format("org.apache.spark.sql.cassandra")\
         .mode('append').options(
@@ -97,6 +140,13 @@ def writeToCassandra(data, key_space_name, table_name):
 
 
 if __name__ == '__main__':
+    """
+    The main function first starts spark session, follow by loading the initial
+    table from Cassandra once. This means that if new users wants to be
+    analyized, we would need to restart spark. However, this would be much
+    faster than reading for each microbatch. It establish direct stream to
+    kafka and then starts program.
+    """
     conf = SparkConf().setAppName('test').set("spark.executor.memory", "6g")
     sc = SparkContext(conf=conf).getOrCreate()
     sqlContext = SQLContext(sc)
@@ -104,7 +154,7 @@ if __name__ == '__main__':
     spark = SparkSession(sc)
     ssc = StreamingContext(sc, 8)
     kafka_stream = KafkaUtils.createDirectStream(ssc, ['test'], kafkaParams={
-            "metadata.broker.list": 《IP of all kafka servers》})
+            "metadata.broker.list": <IP of all kafka servers>})
     flow = kafka_stream.map(lambda v: json.loads(v[1].decode('utf-8')))
     # for java, using following 2 lines
     # floww = flow.map(lambda v:list( itertools.chain.from_iterable(v.values())))
