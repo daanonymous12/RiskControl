@@ -44,5 +44,8 @@ query in frontend for graphing purposes. The third table contained current updat
 ## Frontend 
 Frontend can accessed through wordqu.xyz. Frontend is dash-based and does query from 3 cassandra tables. The first table is an identifier which matches username with ticker specified in strategy. This is because the partition key of user strategy statistic has stock ticker as partition and user as cluster key.The third cassandra table contain historical data for each user which is graphed in the user interface.
 
+Link to Demonstration video:
+https://www.youtube.com/watch?v=uovICvy6P54
+
 Website User Interface: Wordqu.xyz
 
